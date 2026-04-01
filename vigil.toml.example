@@ -1,0 +1,77 @@
+# Vigil — System Monitoring Daemon Configuration
+# Copy to /etc/vigil/vigil.toml and adjust for your system.
+
+[daemon]
+tick_interval = 1          # Sampling interval in seconds
+ring_capacity = 3600       # Number of samples to keep (1 hour at 1s interval)
+pid_file = "/var/run/vigil.pid"
+socket_path = "/var/run/vigil.sock"
+log_path = "/var/log/vigil/vigil.jsonl"
+
+[collectors]
+# Block devices to monitor (from /proc/diskstats)
+disk_devices = ["sda", "nvme0n1"]
+
+# Network interfaces to monitor (from /proc/net/dev)
+net_interfaces = ["eth0", "wlan0"]
+
+# ─── Watchdog Rules ──────────────────────────────────────────
+# Each [[watchdog.rules]] block defines a threshold-based alert.
+#
+# Fields:
+#   name              - Human-readable rule name (for logs)
+#   metric            - One of: cpu, mem, swap, disk, load
+#   threshold         - Trigger when metric exceeds this value
+#   sustained_seconds - Must exceed threshold for this many consecutive seconds
+#   action            - One of: alert, restart, script
+#   action_target     - Service name (for restart) or script path (for script)
+#   cooldown_seconds  - Minimum seconds between action firings
+
+[[watchdog.rules]]
+name = "high_cpu"
+metric = "cpu"
+threshold = 90.0
+sustained_seconds = 30
+action = "alert"
+cooldown_seconds = 300
+
+[[watchdog.rules]]
+name = "memory_pressure"
+metric = "mem"
+threshold = 95.0
+sustained_seconds = 10
+action = "restart"
+action_target = "memory-hungry-app"
+cooldown_seconds = 60
+
+[[watchdog.rules]]
+name = "high_swap"
+metric = "swap"
+threshold = 80.0
+sustained_seconds = 60
+action = "alert"
+cooldown_seconds = 600
+
+[[watchdog.rules]]
+name = "high_load"
+metric = "load"
+threshold = 8.0
+sustained_seconds = 30
+action = "alert"
+cooldown_seconds = 300
+
+# ─── Process Monitoring ─────────────────────────────────────
+# Each [[watchdog.processes]] block monitors a process by name.
+# If the process disappears from /proc, the configured action fires.
+
+[[watchdog.processes]]
+name = "nginx"
+action = "restart"
+action_target = "nginx"
+cooldown_seconds = 30
+
+[[watchdog.processes]]
+name = "postgres"
+action = "restart"
+action_target = "postgresql"
+cooldown_seconds = 60

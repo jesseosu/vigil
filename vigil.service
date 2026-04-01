@@ -1,0 +1,18 @@
+[Unit]
+Description=Vigil system monitoring daemon
+After=network.target
+Documentation=https://github.com/jesseosu/vigil
+
+[Service]
+Type=forking
+PIDFile=/var/run/vigil.pid
+ExecStart=/usr/local/bin/vigild -c /etc/vigil/vigil.toml
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStop=/bin/kill -TERM $MAINPID
+Restart=on-failure
+RestartSec=5
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target

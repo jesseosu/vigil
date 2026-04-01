@@ -1,0 +1,11 @@
+# Build artifacts
+/vigild
+/vigilctl
+*.o
+/test_bin
+
+# Editor/OS files
+*.swp
+*.swo
+*~
+.DS_Store
