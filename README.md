@@ -8,41 +8,41 @@ Vigil is a daemon written in C that reads from `/proc` and `/sys` to collect rea
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                     Linux kernel                         │
-│              /proc  ·  /sys  ·  netlink                  │
+│                     Linux kernel                        │
+│              /proc  ·  /sys  ·  netlink                 │
 └──────────────────────────┬──────────────────────────────┘
                            │ reads (every tick)
 ┌──────────────────────────▼──────────────────────────────┐
-│                    vigild (daemon)                        │
-│                                                          │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌───────────┐  │
-│  │   CPU    │ │  Memory  │ │   Disk   │ │  Network  │  │
-│  │/proc/stat│ │/proc/    │ │/proc/    │ │/proc/net/ │  │
-│  │          │ │ meminfo  │ │diskstats │ │   dev     │  │
-│  └────┬─────┘ └────┬─────┘ └────┬─────┘ └─────┬─────┘  │
+│                    vigild (daemon)                      │
+│                                                         │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌───────────┐   │
+│  │   CPU    │ │  Memory  │ │   Disk   │ │  Network  │   │
+│  │/proc/stat│ │/proc/    │ │/proc/    │ │/proc/net/ │   │
+│  │          │ │ meminfo  │ │diskstats │ │   dev     │   │
+│  └────┬─────┘ └────┬─────┘ └────┬─────┘ └─────┬─────┘   │
 │       └─────────────┴───────────┴──────────────┘        │
-│                          │                               │
-│              ┌───────────▼───────────┐                   │
-│              │  Telemetry ring buffer │                   │
-│              │  (fixed-size, in-mem)  │                   │
-│              └─────┬───────────┬─────┘                   │
-│                    │           │                          │
+│                          │                              │
+│              ┌───────────▼───────────┐                  │
+│              │  Telemetry ring buffer │                 │
+│              │  (fixed-size, in-mem)  │                 │
+│              └─────┬───────────┬─────┘                  │
+│                    │           │                        │
 │         ┌──────────▼──┐  ┌────▼──────────────┐          │
-│         │  Watchdog   │  │ Unix socket server │          │
-│         │  engine     │  │ /var/run/vigil.sock│          │
-│         └──────┬──────┘  └────────┬───────────┘          │
-│                │                  │                       │
-│     ┌──────────┼──────────┐      │                       │
-│     ▼          ▼          ▼      │                       │
-│  restart    alert     run script │                       │
-│  service    (log)     (custom)   │                       │
-│                                  │                       │
-└──────────────────────────────────┼───────────────────────┘
+│         │  Watchdog   │  │ Unix socket server │         │
+│         │  engine     │  │ /var/run/vigil.sock│         │
+│         └──────┬──────┘  └───────┬───────────┘          │
+│                │                 │                      │
+│     ┌──────────┼──────────┐      │                      │
+│     ▼          ▼          ▼      │                      │
+│  restart    alert     run script │                      │
+│  service    (log)     (custom)   │                      │
+│                                  │                      │
+└──────────────────────────────────┼──────────────────────┘
                                    │ Unix socket IPC
-                    ┌──────────────▼───────────────┐
+                    ┌──────────────▼─────────────────┐
                     │        vigilctl (CLI)          │
                     │  status · top · health · logs  │
-                    └───────────────────────────────┘
+                    └────────────────────────────────┘
 ```
 
 ## Build
